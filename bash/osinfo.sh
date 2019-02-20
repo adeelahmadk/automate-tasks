@@ -1,11 +1,11 @@
 #!/bin/bash
 
 #########################################################
-# Script: 	osinfo.sh				#
-# Version:	0.1a 					#
-# Author:	Adeel Ahmad (codegenki)			#
-# Date:		Oct 14, 2017				#
-# Usage:	osinfo                              	#
+# Script: 	osinfo.sh 									#
+# Version:	0.2a										#
+# Author:	Codegenki									#
+# Date:		Feb 20, 2019								#
+# Usage:	osinfo										#
 # Description: 	Bash script to list system information	#
 #########################################################
 

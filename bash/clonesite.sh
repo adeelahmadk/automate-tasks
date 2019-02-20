@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
 # #######################################################
-# Script: 	clonesite.sh				#
-# Version:	0.1b					#
-# Author:	Adeel Ahmad (codegenki)			#
-# Date:		Sep 29, 2018				#
-# Usage:	scrape <uri>	                	#
+# Script: 	clonesite.sh                                #
+# Version:	0.2                                         #
+# Author:	Codegenki									#
+# Date:		Feb 20, 2019                                #
+# Usage:	scrape <uri>								#
 # Description:	Bash script to clone an entire website	#
 # #######################################################
 
@@ -43,7 +43,7 @@ then
     url=(${uri//./ })
     domain="${url[1]}.${url[2]}"
 
-    echo "Scraping ${domain}"
+    echo "Cloning ${domain} to ./${IN}:"
     echo
 
     wget \
