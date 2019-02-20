@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
 # #######################################################
-# Script: 	clonesite.sh                                #
-# Version:	0.2                                         #
-# Author:	Codegenki									#
-# Date:		Feb 20, 2019                                #
-# Usage:	scrape <uri>								#
-# Description:	Bash script to clone an entire website	#
+# Script:       clonesite.sh                            #
+# Version:      0.2a                                    #
+# Author:       Codegenki                               #
+# Date:         Feb 20, 2019                            #
+# Usage:        scrape <uri>                            #
+# Description:  Bash script to clone an entire website  #
 # #######################################################
 
 print_usage() {

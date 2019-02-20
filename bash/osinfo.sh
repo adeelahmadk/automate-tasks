@@ -1,12 +1,12 @@
 #!/bin/bash
 
 #########################################################
-# Script: 	osinfo.sh 									#
-# Version:	0.2a										#
-# Author:	Codegenki									#
-# Date:		Feb 20, 2019								#
-# Usage:	osinfo										#
-# Description: 	Bash script to list system information	#
+# Script:       osinfo.sh                               #
+# Version:      0.2a                                    #
+# Author:       Codegenki                               #
+# Date:         Feb 20, 2019                            #
+# Usage:        osinfo                                  #
+# Description:  Bash script to list system information	#
 #########################################################
 
 SYSINFO=`head -n 1 /etc/issue | awk '{for(i=1;i<NF-1;i++){printf "%s ",$i}; printf "\n" }'`
