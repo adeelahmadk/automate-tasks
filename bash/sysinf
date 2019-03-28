@@ -1,0 +1,82 @@
+#!/bin/bash
+
+#########################################################
+# Script: 		  sysinf.#!/bin/sh					       	      #
+# Version:		  0.1                                     #
+# Author:       Adeel Ahmad (codegenki)   			       	#
+# Date:			    Mar 16, 2019            					     	#
+# Usage:		    sysinf                                 	#
+# Description: 	Bash script to list system information	#
+#########################################################
+
+SYSINFO=`head -n 1 /etc/issue | awk '{for(i=1;i<NF-1;i++){printf "%s ",$i}; printf "\n" }'`
+IFS=$'\n'
+UPTIME=`uptime -p`
+D_UP=${UPTIME:1}
+MYGROUPS=`groups | awk '{for(i=1;i<=NF;i++){printf "%s ",$i; if(i%4==0){printf "\n\t\t"}}; printf "\n"}'`
+DATE=`date`
+KERNEL=`uname -srv`
+CPWD=`pwd`
+ME=`whoami`
+CPU=`arch`
+
+printf "<=== SYSTEM ===>\n"
+sudo tlp-stat -s | awk '
+/System\ \ /{
+printf "  System:\t"
+i=3
+while(i<=NF){
+    printf $i
+    if(i<NF){
+        printf " "
+    }
+    i++
+};
+printf "\n"
+}
+/Boot\ mode/{printf "  Boot Mode:\t" $4 "\n"}
+/Init\ system/{
+printf "  Init System:\t"
+i=4
+while(i<=NF){
+    printf $i
+    if(i<NF){
+        printf " "
+    }
+    i++
+};
+printf "\n"
+}'
+echo "  Distro info:	"$SYSINFO""
+printf "  Kernel:\t"$KERNEL"\n"
+printf "  Uptime:\t"$UPTIME"\n"
+free -mt | awk '
+/Mem/{print "  Memory:\tTotal: " $2 "Mb\tUsed: " $3 "Mb\tFree: " $4 "Mb"}
+/Swap/{print "  Swap:\t\tTotal: " $2 "Mb\tUsed: " $3 "Mb\tFree: " $4 "Mb"}'
+printf "  Architecture:\t"$CPU"\n"
+cat /proc/cpuinfo | grep "model name\|processor" | awk '
+/processor/{printf "  Processor:\t" $3 " : " }
+/model\ name/{
+i=4
+while(i<=NF){
+	printf $i
+	if(i<NF){
+		printf " "
+	}
+	i++
+}
+printf "\n"
+}'
+printf "  Date:\t\t"$DATE"\n"
+
+printf "\n<=== USER ===>\n"
+printf "  User:\t\t"$ME" (uid:"$UID")\n"
+printf "  Groups:\t"
+echo "$MYGROUPS"
+printf "  Home dir:\t"$HOME"\n"
+
+printf "\n<=== NETWORK ===>\n"
+printf "  Hostname:\t"$HOSTNAME"\n"
+ip -o addr | awk '/inet /{print "  IP (" $2 "):\t" $4}'
+/sbin/route -n | awk '/^0.0.0.0/{ printf "  Gateway:\t"$2"\n" }'
+cat /etc/resolv.conf | awk '/^nameserver/{ printf "  Name Server:\t" $2 "\n"}'
