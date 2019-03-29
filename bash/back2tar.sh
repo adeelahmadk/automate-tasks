@@ -1,8 +1,8 @@
 #!/bin/bash
 # full system backup
 # #######################################################
-# Script: 		      part2tar.sh                         #
-# Version:		      0.1 							                  #
+# Script:           part2tar                            #
+# Version:          0.1                                 #
 # Author:		        Adeel Ahmad (codegenki)		          #
 # Date:			        Mar 27, 2019						            #
 # Usage:		        part2tar <backupfile>               #
