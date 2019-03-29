@@ -7,7 +7,7 @@
 # Date:             Mar 27, 2019                        #
 # Usage:            part2tar <backupfile>               #
 # Description:      Backup a mounted filesystem to      #
-#                   a tarball                        	  #
+#                   a tarball                           #
 # #######################################################
 # Acknowledgement:  Based on Archwiki article: 'Full system backup with tar'
 # https://wiki.archlinux.org/index.php/Full_system_backup_with_tar

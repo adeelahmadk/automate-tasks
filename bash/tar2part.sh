@@ -2,9 +2,9 @@
 # full system restore
 # #######################################################
 # Script:           tar2part.sh                         #
-# Version:          0.1 							                  #
-# Author:           Adeel Ahmad (codegenki)		          #
-# Date:             Mar 27, 2019						            #
+# Version:          0.1                                 #
+# Author:           Adeel Ahmad (codegenki)             #
+# Date:             Mar 27, 2019                        #
 # Usage:            tar2part <backupfile>               #
 # Description:      Restore a mounted partition from    #
 #                   a tarball                           #
