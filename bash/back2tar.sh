@@ -3,10 +3,10 @@
 # #######################################################
 # Script:           part2tar                            #
 # Version:          0.1                                 #
-# Author:		        Adeel Ahmad (codegenki)		          #
-# Date:			        Mar 27, 2019						            #
-# Usage:		        part2tar <backupfile>               #
-# Description: 	    Backup a mounted filesystem to      #
+# Author:           Adeel Ahmad (codegenki)             #
+# Date:             Mar 27, 2019                        #
+# Usage:            part2tar <backupfile>               #
+# Description:      Backup a mounted filesystem to      #
 #                   a tarball                        	  #
 # #######################################################
 # Acknowledgement:  Based on Archwiki article: 'Full system backup with tar'

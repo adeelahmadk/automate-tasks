@@ -1,13 +1,13 @@
 #!/bin/bash
 # full system restore
 # #######################################################
-# Script: 		      tar2part.sh                         #
-# Version:		      0.1 							                  #
-# Author:		        Adeel Ahmad (codegenki)		          #
-# Date:			        Mar 27, 2019						            #
-# Usage:		        tar2part <backupfile>               #
-# Description: 	    Restore a mounted partition from    #
-#                   a tarball                        	  #
+# Script:           tar2part.sh                         #
+# Version:          0.1 							                  #
+# Author:           Adeel Ahmad (codegenki)		          #
+# Date:             Mar 27, 2019						            #
+# Usage:            tar2part <backupfile>               #
+# Description:      Restore a mounted partition from    #
+#                   a tarball                           #
 # #######################################################
 # Acknowledgement:  Based on Archwiki article: 'Full system backup with tar'
 # https://wiki.archlinux.org/index.php/Full_system_backup_with_tar
