@@ -40,15 +40,16 @@ else
   backdest="/mnt"
 
   # Labels for backup name
-  host="think431"
+  host="think431-"
+  # Full distro name
   distro=`head -n 1 /etc/issue | awk '{for(i=1;i<NF-1;i++){printf "%s",$i;if(i<NF-2){printf "_"};};}'`
-  date=`date "+%F"`
-  backupfile="$backdest/$host-$distro-$date.tar.gz"
+  date=`date "+%F"`   # Full date
+  uts=`date "+%s"`    # UTC Timestamp
+  backupfile="$backdest/$host$distro-$date-$uts.tar.gz"
 
   # Exclude file location
   file=${0%.*}
   prog=${file##*/} # Program name from filename
-  echo $prog
   # excdir="/home/adeel/.config/scripts/backup"
   excdir="/home/adeel/workspace/bash"
   exclude_file="$excdir/$prog-exc.txt"
