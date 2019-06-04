@@ -5,7 +5,7 @@
 # Version:      0.1                                     #
 # Author:       Adeel Ahmad (codegenki)                 #
 # Date:         May 16, 2019                            #
-# Usage:        header-check <url-file>                 #
+# Usage:        headerchk <url-file>                    #
 # Description:  Bash script to run bulk HTTP header     #
 #               status check.                           #
 #########################################################
