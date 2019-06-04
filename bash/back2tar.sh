@@ -1,11 +1,11 @@
 #!/bin/bash
 # full system backup
 # #######################################################
-# Script:           part2tar                            #
-# Version:          0.1                                 #
+# Script:           back2tar                            #
+# Version:          0.1.1                               #
 # Author:           Adeel Ahmad (codegenki)             #
 # Date:             Mar 27, 2019                        #
-# Usage:            part2tar <backupfile>               #
+# Usage:            back2tar <backupfile>               #
 # Description:      Backup a mounted filesystem to      #
 #                   a tarball                           #
 # #######################################################
