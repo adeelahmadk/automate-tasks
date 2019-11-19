@@ -1,13 +1,12 @@
-#!/bin/bash
+#! /usr/bin/env bash
 
 #########################################################
-# Script:       net-test.sh	                            #
-# Version:      0.1                                     #
-# Author:       Adeel Ahmad (codegenki)                 #
-# Date:         May 16, 2019                            #
-# Usage:        net-test [OPTIONS] [FILE]               #
-# Description:  Bash script to check internet           #
-#               connection                              #
+# Script: 		net-test.sh						       	#
+# Version:		0.2 							     	#
+# Author:		Adeel Ahmad (codegenki)			       	#
+# Date:			May 16, 2019					     	#
+# Usage:		net-test <url-file>                    	#
+# Description: 	Bash script to check internet connection#
 #########################################################
 
 print_usage() {
@@ -77,20 +76,31 @@ else
 	then
         echo "Checking your internet connectivity status...";
 
+	    RED=$(tput setaf 1)
+	    GREEN=$(tput setaf 2)
+    	YELLOW=$(tput setaf 3)
+     	NC=$(tput sgr0) 
+    	online="${GREEN}reachable$NC" offline="${RED}unreachable$NC"
+
         success=0
         links=0
         while IFS= read uri
         do
-          status=`curl -o /dev/null --max-time 10 --silent --head --write-out "%{http_code}" "$uri"`
-          links=$(expr $links + 1)
-          if [[ "$status" == "200" ]]   # check for code 3xx [[ $status -ge 300 ]] && [[ "$status" -lt 400 ]]
-          then
-            success=$(expr $success + 1)
-          fi
-          #echo $status
+            status=`curl -o /dev/null --max-time 10 --silent --head --write-out "%{http_code}" "$uri"`
+            links=$(expr $links + 1)
+            if [[ "$status" == "200" ]]   # check for code 3xx [[ $status -ge 300 ]] && [[ "$status" -lt 400 ]] 
+            then
+                state=$online
+                success=$(expr $success + 1)
+	        else
+	            state=$offline
+            fi
+            #echo $status
+	        printf 'Host %-15s: %s\n' "$uri" "$state"
         done < "$file"
 
         favorable=`printf %.0f $(echo "scale=2;($success/$links)*100" | bc -q)`
+    	echo
 
         if [[ $success -ge 1 ]]
         then
@@ -109,3 +119,4 @@ else
         exit 1
     fi
 fi
+

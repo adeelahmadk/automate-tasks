@@ -1,7 +1,7 @@
-http://en.wikipedia.org/
+https://en.wikipedia.org/wiki/Main_Page
 http://baidu.com
 https://www.google.com
 https://www.yahoo.com
 https://www.twitter.com
-http://youtube.com
+https://www.youtube.com
 https://github.com
