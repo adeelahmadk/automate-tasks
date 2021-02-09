@@ -1,0 +1,70 @@
+#!/bin/sh
+
+#########################################################
+# Script:       picotts-sel                             #
+# Version:      0.1                                     #
+# Author:       Adeel Ahmad (codegenki)                 #
+# Date Created: Feb 9, 2021                             #
+# Date Mod.:    Feb 9, 2021                             #
+# Usage:        picotts-sel                             #
+# Description:  Script to play TTS for selected text    #
+#########################################################
+
+# help message
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+  echo "Usage: picotts-sel"
+  echo "Language will be automatically detected from system locale"
+  echo "Supported languages: English, Spanish, German, French and Italian"
+  exit 0
+fi
+
+# no arg required
+if [ "$#" -eq 0 ]; then
+  # get language configured in locale environment variable
+  if [ "$LC_ALL" != "" ]; then
+    lang=$LC_ALL
+  elif [ "$LC_MESSAGES" != "" ]; then
+    lang=$LC_MESSAGES
+  elif [ "$LANG" != "" ]; then
+    lang=$LANG
+  else
+    lang="C"
+  fi
+
+  # check if language is supported by picoTTS
+  case "$lang" in
+    en_US*)
+      lang_pico="en-US"
+      ;;
+    en*)
+      lang_pico="en-GB"
+      ;;
+    es*)
+      lang_pico="es-ES"
+      ;;
+    de*)
+      lang_pico="de-DE"
+      ;;
+    fr*)
+      lang_pico="fr-FR"
+      ;;
+    it*)
+      lang_pico="it-IT"
+      ;;
+    *)
+      echo "picotts-sel: unsupported language: $lang" >&2
+      exit 1
+      ;;
+  esac
+
+  # get selection from X server
+  sayit=$(xsel -o)
+  if [ -n "$sayit" ]; then
+    # play selection text
+    picotts $lang_pico $sayit
+  else
+    # error: no text selected
+    echo "picotts-sel: no text selected, select some text before invoking."  >&2
+    exit 1
+  fi
+fi

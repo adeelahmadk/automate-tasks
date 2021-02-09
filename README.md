@@ -9,4 +9,6 @@ Scripts to automate miscellaneous daily desktop tasks.
 | `headerchk` | **bash** | A mass HTTP header check taking _urls_ from a file. |
 | `net-test` | **bash** | Test your internet connectivity status, designated by a mass HTTP header check. |
 | `osinfo` | **bash** | script to list information about running OS. |
-| `sysinf` | **bash** | List a system's information. (Dependency: `tlp`)  |
+| `sysinf` | **bash** | List a system's information. (dependency: `tlp`) |
+| `picotts` | **sh** | Play Text-to-Speech for some text. (dependency: `libttspico-utils`) |
+| `picotts-sel` | **sh** | Play TTS for text selection. (dependency: `picotts`) |

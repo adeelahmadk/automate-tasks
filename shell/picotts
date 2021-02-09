@@ -1,0 +1,51 @@
+#!/bin/sh
+
+#########################################################
+# Script:       picotts                                 #
+# Version:      0.1                                     #
+# Author:       Adeel Ahmad (codegenki)                 #
+# Date Created: Feb 9, 2021                             #
+# Date Mod.:    Feb 9, 2021                             #
+# Usage:        picotts                                 #
+# Description:  Script to play TTS for some text        #
+#########################################################
+
+# help msg
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+  echo "Usage: picotts <lang> <msg>"
+  echo "Langs: en-US, en-GB, es-ES, de-DE, fr-FR, it-IT"
+  exit 0
+fi
+
+# error: not enough arguments
+if [ $# -lt 2 ]; then
+  echo "picotts: not enough arguments were given" >&2
+  exit 1
+fi
+
+# check for available languages
+case "$1" in
+  en-US|en-GB|es-ES|de-DE|fr-FR|it-IT)
+    ;;
+  *)
+    echo "picotts: unsupported language: $1" >&2
+    exit 1
+    ;;
+esac
+
+# create temp file
+tmpfile=$(mktemp -tp /tmp picoSndXXXXXX)
+tmpfilewav="$tmpfile.wav"
+mv "$tmpfile" "$tmpfilewav"
+
+# extract language argument
+lang_pico=$1
+shift
+
+# play message
+pico2wave -l $lang_pico -w "$tmpfilewav" "$*"
+aplay -q "$tmpfilewav"
+
+# delete temp file
+rm "$tmpfilewav"
+
