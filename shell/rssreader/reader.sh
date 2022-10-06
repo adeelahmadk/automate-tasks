@@ -1,0 +1,280 @@
+#!/usr/bin/env sh
+
+# ###################################################
+# Script:       reader.sh (rewrite)                 #
+# Version:      0.10                                #
+# Author:       Adeel Ahmad (adeelahmadk)           #
+# Date Crated:  Sep 27, 2022                        #
+# Date Updated: Oct 06, 2022                        #
+# Usage:        reader url | FILE                   #
+# Description:  Feed reader script to extract,      #
+#               transform and store feeds from      #
+#               given url or file of url's.         #
+# ###################################################
+
+# #####################
+# Globals Section
+# #####################
+
+# Executables with absolute paths
+_curl=`which curl`
+_awk=`which awk`
+_grep=`which grep`
+_sed=`which sed`
+_cut=`which cut`
+_tr=`which tr`
+_rm=`which rm`
+_mkdir=`which mkdir`
+_kill=`which kill`
+_normalize=`which hxnormalize`
+_select=`which hxselect`
+_uncdata=`which hxuncdata`
+_unent=`which hxunent`
+
+# Global Vars
+_DEFAULT_STORE="$HOME/.cache/rss-reader"
+STORAGE=""
+OUTFILE=""
+CHANNEL_SELECTOR=""
+ITEM_SELECTOR=""
+
+# Request headers
+REQ_HEAD_ACCEPT="accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8"
+REQ_HEAD_LANG="accept-language: en-US,en;q=0.4"
+REQ_HEAD_AGENT="user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Falkon/3.1.0 Chrome/69.0.3497.128 Safari/537.36"
+
+# global request status
+CURL_STATUS=""
+
+# Components of URL link
+SCHEME=''
+URL=''
+NETLOC=''
+HOST=''
+SUBPATH=''
+FQDN=''
+
+# #####################
+# Functions Section
+# #####################
+
+print_usage() {
+    echo "Usage: `basename $0` url | FILE" 1>&2
+    echo "       Output is saved in a file named <domain.feed>" 1>&2
+    echo " url   URL to fetch feed" 1>&2
+    echo " FILE  File with more than one url to fetch feed" 1>&2
+}
+
+check_deps() {
+    # check whether the dependencies are installed
+    [ -z $_curl ]       && { echo "missing dependecy: curl"; exit 1; }
+    [ -z $_awk ]        && { echo "missing dependecy: awk"; exit 1; }
+    [ -z $_grep ]       && { echo "missing dependecy: grep"; exit 1; }
+    [ -z $_sed ]        && { echo "missing dependecy: sed"; exit 1; }
+    [ -z $_cut ]        && { echo "missing dependecy: cut"; exit 1; }
+    [ -z $_tr ]         && { echo "missing dependecy: tr"; exit 1; }
+    [ -z $_select ]     && { echo "missing dependecy: hxselect"; exit 1; }
+    [ -z $_unent ]      && { echo "missing dependecy: hxunent"; exit 1; }
+    [ -z $_uncdata ]    && { echo "missing dependecy: hxuncdata"; exit 1; }
+    [ -z $_normalize ]  && { echo "missing dependecy: hxnormalize"; exit 1; }
+}
+
+clean_default_store() {
+    feedpath="$_DEFAULT_STORE/*.feed"
+
+    for file in $feedpath
+    do
+        if [ -f "$file" ]; then
+            $_rm "${file}"
+        fi
+    done
+
+    return "$?"
+}
+
+get_http_headers() {
+     CURL_STATUS=$("$_curl" -o /dev/null \
+                        --max-time 10 \
+                        --silent -I \
+                        -H "$REQ_HEAD_ACCEPT" \
+                        -H "$REQ_HEAD_LANG" \
+                        -H "$REQ_HEAD_AGENT" \
+                        --write-out "%{http_code} %{content_type}" \
+                        "$1")
+}
+
+
+is_valid_url() {
+    if [ -z "$CURL_STATUS" ]; then
+        get_http_headers "$1"
+    fi
+
+    local result="$(echo ${CURL_STATUS} | $_awk '{print $1;}')"
+    if [ "$result" -eq 200 ]
+    then
+        #Comparison successfull with $status
+        return 0
+    else
+        #Comparison failed with $status
+        return 1
+    fi
+}
+
+is_valid_rss() {
+    if [ -z "$CURL_STATUS" ]; then
+        get_http_headers "$1"
+    fi
+
+    local result="$(echo ${CURL_STATUS} | $_grep -E 'rss|xml')"
+    if [ -n "$result" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+# parses url link from general format:
+# scheme://user:password@fqdn:port/somepath
+parse_link() {
+    URL="$1"
+    # Extract scheme
+    SCHEME="$(echo $URL | $_grep :// | $_sed -e's,^\(.*://\).*,\1,g')"
+    # Remove scheme from the url
+    URL="$(echo $URL | $_sed -e s,$SCHEME,,g)"
+    # Extract username & password (user:password@fqdn:port/somepath)
+    USERPASS="$(echo $URL | $_grep @ | $_cut -d@ -f1)"
+    # Extract the host (user:password@fqdn:port/somepath)
+    NETLOC="$(echo $URL | $_sed -e s,$USERPASS@,,g | $_cut -d/ -f1)"
+    # Extract port net location (fqdn:port/somepath)
+    PORT="$(echo $NETLOC | $_grep : | $_sed -e 's,.*:\([0-9]*\).*,\1,g')"
+    # Extract host's domain (remove port from fqdn:port/somepath)
+    HOST="$(echo $NETLOC | $_sed -e s,:$PORT,,g)" #"($_awk -F. '{print $(NF-1);}')"
+    # Extract subpath (fqdn/somepath)
+    SUBPATH="$(echo $URL | $_cut -d/ -f2-)"
+    # Extract query string
+    # Remove subpath (i.e. remove /somepath from fqdn/somepath)
+    #FQDN="$(echo $HOST | $_sed 's,\([^ @]*\)\.[^ @]*$,\1,g' | $_awk -F. '{print $NF;}')"
+}
+
+request_content() {
+    if [ "$#" -lt 1 ]; then
+        echo ""
+    fi
+
+    local LINK="$1"
+    $_curl -s \
+           -H "$REQ_HEAD_ACCEPT" \
+           -H "$REQ_HEAD_LANG" \
+           -H "$REQ_HEAD_AGENT" \
+           $LINK
+}
+
+run_etl() {
+    LINK="$1"
+
+    if ! is_valid_rss $LINK; then
+        echo "$LINK: Not a valid RSS feed!"
+        exit 2
+    fi
+
+    printf "ETL (PID: $$) running for ${LINK}\n"
+    parse_link $LINK
+
+    SEP='\n\n'
+    CHANNEL_SELECTOR='channel > title'
+    ITEM_SELECTOR='item > title'
+    OUTFILE="$STORAGE/$HOST"
+
+    category=
+    if [ -n "$SUBPATH" ]; then
+        category="$(echo $SUBPATH \
+                    | $_awk -F/ '{print $NF;}' \
+                    | $_sed 's/[ _]/-/g')"
+        if [ -n "$category" ]; then
+            OUTFILE="$OUTFILE.$category"
+        fi
+    fi
+
+    OUTFILE="$OUTFILE.feed"
+    # create temp file for cache and clean up at exit
+    local CACHEFILE="$(mktemp -p $STORAGE $HOST.cached.XXXXXXXXXX)" || \
+            { echo "Failed to create temp file"; exit 1; }
+    # clean up if an unusual termination occurs
+    trap '{ rm -f -- $CACHEFILE; }' INT KILL TERM STOP EXIT
+
+    # Extract/Fetch Stage
+    # call: request HTTP content
+    request_content "$LINK" > $CACHEFILE
+
+    if [ "$?" -ne 0 ]; then
+        echo "Failed to fetch feed from $HOST" 1>&2
+        return 1;
+    fi
+
+    # Transform and Load cached feed
+    ## _TL feed title
+    cat $CACHEFILE \
+        | $_select -c $CHANNEL_SELECTOR \
+        | $_uncdata \
+        | $_unent > $OUTFILE
+    printf "$SEP" >> $OUTFILE
+
+    ## _TL feed item titles
+    cat $CACHEFILE \
+        | $_normalize -x \
+        | $_select -c -s $SEP $ITEM_SELECTOR \
+        | $_uncdata \
+        | $_unent \
+        | $_awk -v s=$SEP 'BEGIN{ RS=s; ORS=s; FS="\n"; OFS="" } {$1=$1; print NR ". " $0}' \
+        | $_tr -s ' '  >> $OUTFILE
+
+    $_kill -SIGTERM $$
+    return "$?"
+}
+
+# #####################
+# Main Section
+# #####################
+
+if [ "$#" -eq 0 ]; then
+    print_usage
+    return 1
+elif [ "$#" -eq 1 ]; then
+    if [ ! -d "$_DEFAULT_STORE" ]; then
+        $_mkdir -p "$_DEFAULT_STORE" \
+        || { printf "Required write permission to create ${_DEFAULT_STORE}\n" 1>&2; exit 1; }
+    fi
+
+    # check for dependencies
+    check_deps
+    printf "Reader running with PID: $$\n"
+
+    STORAGE="$_DEFAULT_STORE"
+    COUNT=0
+
+    if  is_valid_url "$1"; then
+        CURL_STATUS=""
+        clean_default_store
+        run_etl "$1"
+        COUNT=$(($COUNT + 1))
+    elif [ -r "$1" ]; then
+        clean_default_store
+        while IFS= read line
+        do
+            CURL_STATUS=""
+            if [ -n "$line" ] && is_valid_url "$line"; then
+                run_etl "$line"
+                COUNT=$(($COUNT + 1))
+            fi
+        done < "$1"
+    else
+        echo "$1 not a valid URL or file name!" 1>&2
+        echo
+        print_usage
+        exit 1
+    fi
+
+    printf "$COUNT Feed(s) stored in $STORAGE\n"
+    return 0
+fi
+

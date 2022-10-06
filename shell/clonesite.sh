@@ -9,24 +9,28 @@
 # Description:  Bash script to clone an entire website  #
 # #######################################################
 
+PROGNAME=`basename $0`
+
 print_usage() {
-	echo "Usage: `basename $0` <uri>"
-	echo "Try '`basename $0` --help' for more information."
+	echo "Usage: $PROGNAME <uri>
+Try '$PROGNAME --help' for more information.
+    "
+    return
 }
 
 print_help() {
-	echo "Usage: `basename $0` <uri>"
-	echo "Clone an entire website designated by <uri> avoiding out-of-domain links."
-	echo
-	echo "  <uri>       uri of the website, e.g. http://www.example.com"
-	echo "Options"
-	echo "  -h          Print this help"
+	echo "Usage: $PROGNAME <uri>
+Clone an entire website designated by <uri> avoiding out-of-domain links.
+
+  <uri>   uri of the website, e.g. http://www.example.com
+  Options
+    -h    Print this help"
 }
 
 if [ "$#" -eq 1 ] && [ "$1" = "--help" ]
 then
 	print_help
-	exit 0
+	exit
 elif [ "$#" -eq 1 ]
 then
     IN=$1
@@ -58,6 +62,6 @@ then
          $IN
 
 else
-	print_usage
+	print_usage >&2
 	exit 1
 fi
