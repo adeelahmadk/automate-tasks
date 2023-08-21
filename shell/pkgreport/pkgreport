@@ -1,0 +1,136 @@
+#!/bin/bash
+
+#########################################################
+# Script:       pkgreport                               #
+# Version:      0.1.0                                   #
+# Author:       Adeel Ahmad (adeelahmadk)               #
+# Date Created: Aug 21, 2023                            #
+# Date Mod.:    Aug 22, 2023                            #
+# Usage:        pkgreport FILE                          #
+# Description:  Generate HTML report given a list of    #
+#               packages in FILE (or stdin)             #
+#########################################################
+
+outfile="report_$(date +'%Y-%m-%dT%H:%M:%S%z').html"
+__apt=`which apt`
+__echo=`which echo`
+__awk=`which awk`
+
+function print_usage() {
+    echo "Usage: `basename $0` FILE"
+    echo "       With no FILE, reads stdin"
+}
+
+function is_package_installed() {
+    # check if the given package name is installed.
+    [ -n "$1" ] && $__apt -qq list "$1" --installed 2> /dev/null || $__echo -n
+}
+
+function html_header() {
+    # print html header
+read -r -d '' HEAD <<- ENDOFHEADER
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>APT Package Report</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+            * {
+              padding: 0;
+              margin: 0;
+            }
+            body {
+              font-family: sans-serif;
+              font-size: 14px;
+              width: 60%;
+              margin: 0 auto;
+            }
+            h1 { margin: 10px; }
+            header { padding: 1.2em 0; }
+            main { padding: 1em 0; }
+            main article {
+              margin: 0 0 1em 0.8em;
+              padding: 0.8em 0;
+              border-bottom: 1px solid #c9c9c9;
+            }
+            article h2 { margin-bottom: 0.3em; }
+            article section {
+              padding: 0.3em 0;
+              display: flex;
+              justify-content: left;
+              align-items: flex-start
+            }
+            section h4 { min-width: 120px; }
+            section p { font-size: 0.9em; }
+             /* max-width 640px, mobile-only styles, use when QAing mobile issues */
+            @media all and (max-width: 480px) {
+              body { width: 95%; }
+            }        
+        </style>
+    </head>
+    <body>
+        <header>
+            <h1>Report of Installed Packages</h1>
+        </header>
+        <main>
+ENDOFHEADER
+
+    printf "%s\n" "$HEAD"
+}
+
+function html_footer() {
+    # print html header
+read -r -d '' FOOT <<- ENDOFFOOTER
+        </main>
+    </body>
+</html>
+ENDOFFOOTER
+
+    printf "%s" "$FOOT"
+}
+
+function process() {
+    # process package name
+
+    $__apt show "$1" 2> /dev/null \
+        | $__awk '/Description-md5/ {exit}p; /Description.*:/ {p=1}'
+}
+
+html_header > $outfile
+
+# Check for pipe on stdin
+if [ -p /dev/stdin ]; then
+    # If we want to read the input line by line
+    while IFS= read line; do
+        result=`is_package_installed $line`
+        if [ -n "$result" ]; then
+            ver=$($__echo "$result" | $__awk '{print $2}')
+            desc=$(process $line)
+        read -r -d '' block <<- ENDOFBLOCK
+        <article class='package'>
+            <h2>$line</h2>
+            <section class='package-version'>
+                <h4>Version:</h4>
+                <p>$ver</p>
+            </section>
+            <section class='package-description'>
+                <h4>Description:</h4>
+                <p>$desc</p>
+            </section>
+        </article>
+ENDOFBLOCK
+            $__echo "$block" >> $outfile
+        fi
+    done
+
+    html_footer >> $outfile
+elif [ $# -ne 1 ]; then
+    print_usage
+    exit 1
+elif [ -r "$1" ]; then
+    infile="$1"
+else
+    $__echo "$1: not a readable file!"
+    exit 1
+fi

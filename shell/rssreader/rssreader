@@ -177,7 +177,7 @@ run_etl() {
         exit 2
     fi
 
-    printf "ETL (PID: $$) running for ${LINK}\n"
+    #printf "ETL (PID: $$) running for ${LINK}\n"
     parse_link $LINK
 
     SEP='\n\n'
@@ -247,7 +247,7 @@ elif [ "$#" -eq 1 ]; then
 
     # check for dependencies
     check_deps
-    printf "Reader running with PID: $$\n"
+    #printf "Reader running with PID: $$\n"
 
     STORAGE="$_DEFAULT_STORE"
     COUNT=0
@@ -274,7 +274,7 @@ elif [ "$#" -eq 1 ]; then
         exit 1
     fi
 
-    printf "$COUNT Feed(s) stored in $STORAGE\n"
+    #printf "$COUNT Feed(s) stored in $STORAGE\n"
     return 0
 fi
 
