@@ -2,16 +2,17 @@
 
 #########################################################
 # Script:       pkgreport                               #
-# Version:      0.1.0                                   #
+# Version:      0.2.0                                   #
 # Author:       Adeel Ahmad (adeelahmadk)               #
 # Date Created: Aug 21, 2023                            #
-# Date Mod.:    Aug 22, 2023                            #
+# Date Mod.:    Oct 05, 2023                            #
 # Usage:        pkgreport FILE                          #
 # Description:  Generate HTML report given a list of    #
 #               packages in FILE (or stdin)             #
 #########################################################
 
-outfile="report_$(date +'%Y-%m-%dT%H:%M:%S%z').html"
+timestmp=$(date +'%Y-%m-%dT%H:%M:%S%z')
+outfile="report_$timestmp.html"
 __apt=`which apt`
 __echo=`which echo`
 __awk=`which awk`
@@ -42,17 +43,28 @@ read -r -d '' HEAD <<- ENDOFHEADER
             }
             body {
               font-family: sans-serif;
-              font-size: 14px;
+              font-size: 1rem;
               width: 60%;
               margin: 0 auto;
             }
-            h1 { margin: 10px; }
-            header { padding: 1.2em 0; }
+            h1 { margin: 0.35em; }
+            header {
+              margin-top: 0.5em;
+              padding: 1em 0;
+              border-radius: 4px;
+              box-shadow: 0px 0px 6px 1px rgba(0,0,0,0.3);
+            }
+            header p {
+              font-size: 0.5rem;
+              margin: 0 1.7em;
+              padding: 0.9em 0;
+            }
             main { padding: 1em 0; }
             main article {
-              margin: 0 0 1em 0.8em;
-              padding: 0.8em 0;
-              border-bottom: 1px solid #c9c9c9;
+              margin: 0 0 1em 0em;
+              padding: 0.8em;
+              box-shadow: 0px 0px 3px 1px rgba(0,0,0,0.25);
+              # border-bottom: 1px solid #c9c9c9;
             }
             article h2 { margin-bottom: 0.3em; }
             article section {
@@ -62,7 +74,8 @@ read -r -d '' HEAD <<- ENDOFHEADER
               align-items: flex-start
             }
             section h4 { min-width: 120px; }
-            section p { font-size: 0.9em; }
+            section p { font-size: 0.9rem; }
+            section.package-description p { padding-right: 0.2em; }
              /* max-width 640px, mobile-only styles, use when QAing mobile issues */
             @media all and (max-width: 480px) {
               body { width: 95%; }
@@ -72,6 +85,7 @@ read -r -d '' HEAD <<- ENDOFHEADER
     <body>
         <header>
             <h1>Report of Installed Packages</h1>
+            <p>Generated on: $timestmp</p>
         </header>
         <main>
 ENDOFHEADER
@@ -90,38 +104,45 @@ ENDOFFOOTER
     printf "%s" "$FOOT"
 }
 
-function process() {
+function process_desc() {
     # process package name
-
     $__apt show "$1" 2> /dev/null \
         | $__awk '/Description-md5/ {exit}p; /Description.*:/ {p=1}'
 }
 
-html_header > $outfile
-
-# Check for pipe on stdin
-if [ -p /dev/stdin ]; then
-    # If we want to read the input line by line
-    while IFS= read line; do
-        result=`is_package_installed $line`
-        if [ -n "$result" ]; then
-            ver=$($__echo "$result" | $__awk '{print $2}')
-            desc=$(process $line)
-        read -r -d '' block <<- ENDOFBLOCK
-        <article class='package'>
-            <h2>$line</h2>
-            <section class='package-version'>
-                <h4>Version:</h4>
-                <p>$ver</p>
-            </section>
-            <section class='package-description'>
-                <h4>Description:</h4>
-                <p>$desc</p>
-            </section>
-        </article>
+function print_item() {
+    # print package name, version, description
+    item="$1"
+    result=`is_package_installed $item`
+    if [ -n "$result" ]; then
+        ver=$($__echo "$result" | $__awk '{print $2}')
+        desc=$(process_desc $item)
+read -r -d '' block <<- ENDOFBLOCK
+<article class='package'>
+    <h2>$item</h2>
+    <section class='package-version'>
+        <h4>Version:</h4>
+        <p>$ver</p>
+    </section>
+    <section class='package-description'>
+        <h4>Description:</h4>
+        <p>$desc</p>
+    </section>
+</article>
 ENDOFBLOCK
-            $__echo "$block" >> $outfile
-        fi
+
+        printf "%s\n" "$block"
+    fi
+}
+
+if [ -p /dev/stdin ]; then
+    ## list of packages piped on stdin
+    html_header > $outfile
+
+    # read the input line by line
+    while IFS= read line; do
+        # append package info to the report file
+        print_item $result >> $outfile
     done
 
     html_footer >> $outfile
@@ -129,7 +150,17 @@ elif [ $# -ne 1 ]; then
     print_usage
     exit 1
 elif [ -r "$1" ]; then
+    ## list of packages in a file
     infile="$1"
+    html_header > $outfile
+
+    # read the input line by line
+    while IFS= read -r line; do
+        # append package info to the report file
+        print_item $line >> $outfile
+    done < "$infile"
+
+    html_footer >> $outfile
 else
     $__echo "$1: not a readable file!"
     exit 1
