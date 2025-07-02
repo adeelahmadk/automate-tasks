@@ -112,7 +112,7 @@ is_valid_url() {
     local result="$(echo ${CURL_STATUS} | $_awk '{print $1;}')"
     if [ "$result" -eq 200 ]
     then
-        #Comparison successfull with $status
+        #Comparison successful with $status
         return 0
     else
         #Comparison failed with $status
