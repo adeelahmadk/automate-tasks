@@ -22,5 +22,5 @@ Scripts to automate miscellaneous daily desktop tasks.
 | `ytdl-list` | bash | Network, Media | Download a YouTube playlist using `youtube-dl` to a directory |
 | `ytdlp-list` | bash | Network, Media | Download a YouTube playlist using `yt-dlp` to a directory |
 | [`mysql-drop-all-tables.sh`](dev/mysql/mysql-drop-all-tables.sh) | bash | Database | Drop all tables in a MySQL database. Useful for resetting development DBs. |
-| [`mysql-setup-db-user.sh`](./dev/mysql/mysql-setup-db-user.sh) | bash | Database | Create a new DB and a user withh full access to it. |
+| [`mysql-setup-db-user.sh`](./dev/mysql/mysql-setup-db-user.sh) | bash | Database | Create a new DB and a user with full access to it. |
 
