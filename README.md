@@ -23,4 +23,5 @@ Scripts to automate miscellaneous daily desktop tasks.
 | `ytdlp-list` | bash | Network, Media | Download a YouTube playlist using `yt-dlp` to a directory |
 | [`mysql-drop-all-tables.sh`](dev/mysql/mysql-drop-all-tables.sh) | bash | Database | Drop all tables in a MySQL database. Useful for resetting development DBs. |
 | [`mysql-setup-db-user.sh`](./dev/mysql/mysql-setup-db-user.sh) | bash | Database | Create a new DB and a user with full access to it. |
+| [`run-container.sh`](./dev/docker/run-container.sh) | bash | Docker | Build an image and start a container. |
 
