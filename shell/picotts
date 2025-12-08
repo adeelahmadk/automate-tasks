@@ -13,8 +13,8 @@
 APP_NAME=$(basename $0)
 
 # check availability of TTS engine
-_talk=`command -v pico2wave`
-if [ -z "$_talk" ]; then
+_tts=`command -v pico2wave`
+if [ -z "$_tts" ]; then
   echo "Missing dependency: install SVOX Pico engine!" >&2
   exit 1
 fi
@@ -62,7 +62,7 @@ lang_pico=$1
 shift
 
 # play message
-$_talk -l $lang_pico -w "$tmpfilewav" "$*"
+$_tts -l $lang_pico -w "$tmpfilewav" "$*"
 $_play "$tmpfilewav" 2>/dev/null
 
 # delete temp file
