@@ -2,17 +2,31 @@
 
 #########################################################
 # Script:       picotts-sel                             #
-# Version:      0.1                                     #
+# Version:      0.2                                     #
 # Author:       Adeel Ahmad (codegenki)                 #
 # Date Created: Feb 9, 2021                             #
-# Date Mod.:    Feb 9, 2021                             #
+# Date Mod.:    Dec 8, 2025                             #
 # Usage:        picotts-sel                             #
 # Description:  Script to play TTS for selected text    #
 #########################################################
 
+APP_NAME=$(basename $0)
+
+# detect & decide selector application
+_selector=
+if [ "$XDG_SESSION_TYPE" = "wayland" ]; then
+  [ -n $(command -v wl-paste) ] \
+    && _selector="wl-paste --primary --no-newline" \
+    || { echo "wl-paste required in wayland session! Install wl-clipboard."; return 1; }
+elif [ "$XDG_SESSION_TYPE" = "x11" ]; then
+  [ -n $(command -v xsel) ] \
+    && _selector="xsel -o" \
+    || { echo "xsel required in x11 session! Install xsel."; return 1; }
+fi
+
 # help message
 if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
-  echo "Usage: picotts-sel"
+  echo "Usage: $APP_NAME"
   echo "Language will be automatically detected from system locale"
   echo "Supported languages: English, Spanish, German, French and Italian"
   exit 0
@@ -52,19 +66,19 @@ if [ "$#" -eq 0 ]; then
       lang_pico="it-IT"
       ;;
     *)
-      echo "picotts-sel: unsupported language: $lang" >&2
+      echo "$APP_NAME: unsupported language: $lang" >&2
       exit 1
       ;;
   esac
 
-  # get selection from X server
-  sayit=$(xsel -o)
+  # get selection from X server/wayland
+  sayit=$(eval $_selector)
   if [ -n "$sayit" ]; then
     # play selection text
     picotts $lang_pico $sayit
   else
     # error: no text selected
-    echo "picotts-sel: no text selected, select some text before invoking."  >&2
+    echo "$APP_NAME: no text selected, select some text before invoking."  >&2
     exit 1
   fi
 fi
