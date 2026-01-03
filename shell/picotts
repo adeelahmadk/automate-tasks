@@ -26,7 +26,9 @@ if [ -z "$_player1" -a -z "$_player2" ]; then
   echo "Missing dependency: install either of [alsa-utils, ffmpeg]" >&2
   exit 1
 fi
+# default to ffmpeg player
 [ -n "$_player1" ] && _play="$_player1 -hide_banner -nodisp -autoexit"
+# resort to alsa player
 [ -z "$_play" ] && _play="$_player2 -q"
 
 # help msg

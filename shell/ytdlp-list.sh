@@ -1,15 +1,17 @@
 #!/usr/bin/env bash
 
 #################################################################
-# Script:       net-test.sh                                     #
-# Version:      0.1.1                                           #
-# Author:       Adeel Ahmad (codegenki)                         #
+# Script:       ytdlp-list.sh                                   #
+# Version:      0.2.2                                           #
+# Author:       Adeel Ahmad (adeelahmadk)                       #
 # Date Created: Jun 20, 2021                                    #
-# Date Mod.:    Jul 10, 2021                                    #
-# Usage:        ytdl-list <playlist-url> [DIR]                  #
-# Description:  Bash script to download a youtube playlist      #
-# Example:      ./ytdl-list.sh                                  #
+# Date Mod.:    Dec 15, 2025                                    #
+# Usage:        ytdlp-list <playlist-url> [LISTITEMS] [DIR]     #
+# Description:  Bash script to download items of a              #
+#               youtube playlist                                #
+# Example:      ./ytdlp-list.sh                                 #
 #                   https://www.youtube.com/playlist?list=XYZ   #
+#                   3-7                                         #
 #                   $HOME/Videos/                               #
 #################################################################
 
