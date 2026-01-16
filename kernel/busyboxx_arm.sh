@@ -89,7 +89,7 @@ find . -print0 |
 
 cd .. # busyboxx/
 
-# copy kernel to boot OS
+# kernel image to boot OS
 cp src/linux-$KERNEL_VERSION/arch/arm/boot/zImage .
 
 qemu-system-arm -M virt \
