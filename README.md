@@ -2,6 +2,8 @@
 
 Scripts to automate miscellaneous daily desktop tasks.
 
+**Shell Tasks**
+
 | Script | Language | Category | Description |
 | --- | --- | --- | --- |
 | `back2tar` | **bash** | Filesystem | Backup a mounted filesystem to a tarball. Script looks for a file (back2tar-exc.txt) with list of excluded dir's |
@@ -22,7 +24,21 @@ Scripts to automate miscellaneous daily desktop tasks.
 | `ytdl-list` | bash | Network, Media | Download a YouTube playlist using `youtube-dl` to a directory |
 | `ytdlp-list` | bash | Network, Media | Download a YouTube playlist using `yt-dlp` to a directory |
 | `update_golang` | bash | Package Management | Install/upgrade Golang |
-| [`mysql-drop-all-tables.sh`](dev/mysql/mysql-drop-all-tables.sh) | bash | Database | Drop all tables in a MySQL database. Useful for resetting development DBs. |
-| [`mysql-setup-db-user.sh`](./dev/mysql/mysql-setup-db-user.sh) | bash | Database | Create a new DB and a user with full access to it. |
-| [`run-container.sh`](./dev/docker/run-container.sh) | bash | Docker | Build an image and start a container. |
+|                                |          |                                |                                                              |
+|                                |          |                                |                                                              |
+|                                |          |                                |                                                              |
 
+**Development Tasks**
+
+| Script                                                       | Language | Category | Description                                                  |
+| ------------------------------------------------------------ | -------- | -------- | ------------------------------------------------------------ |
+| [`mysql-drop-all-tables.sh`](dev/mysql/mysql-drop-all-tables.sh) | bash     | Database | Drop all tables in a MySQL database. Useful for resetting development DBs. |
+| [`mysql-setup-db-user.sh`](./dev/mysql/mysql-setup-db-user.sh) | bash     | Database | Create a new DB and a user with full access to it.           |
+| [`run-container.sh`](./dev/docker/run-container.sh)          | bash     | Docker   | Build an image and start a container.                        |
+
+**Linux Kernel Development**
+
+| Script                                              | Language | Category | Description                                                  |
+| --------------------------------------------------- | -------- | -------- | ------------------------------------------------------------ |
+| [`busyboxx_native.sh`](./kernel/busyboxx_native.sh) | bash     | OS       | Download Linux kernel and busybox. Build a minimal distro, and boot it in QEmu. |
+| [`busyboxx_arm.sh`](./kernel/busyboxx_arm.sh)       | bash     | OS       | Download cross compiler toolchain, Linux kernel, and busybox. Build a minimal distro for ARM, and boot it in QEmu. |
