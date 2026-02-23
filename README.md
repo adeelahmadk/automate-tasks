@@ -2,7 +2,7 @@
 
 Scripts to automate miscellaneous daily desktop tasks.
 
-**Shell Tasks**
+**System Administration Tasks**
 
 | Script | Language | Category | Description |
 | --- | --- | --- | --- |
@@ -24,7 +24,8 @@ Scripts to automate miscellaneous daily desktop tasks.
 | `ytdl-list` | bash | Network, Media | Download a YouTube playlist using `youtube-dl` to a directory |
 | `ytdlp-list` | bash | Network, Media | Download a YouTube playlist using `yt-dlp` to a directory |
 | `update_golang` | bash | Package Management | Install/upgrade Golang |
-
+| [`uninstall_python`](./system/pkgman/uninstall_python.sh) | bash | Package Management | Uninstall Python installed from source |
+| [`updchk_calibre.py`](./system/pkgman/updchk_calibre.py) | Python | Package Management | Check if an update is available for calibre |
 
 
 **Development Tasks**
