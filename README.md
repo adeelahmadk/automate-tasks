@@ -15,10 +15,10 @@ Scripts to automate miscellaneous daily desktop tasks.
 | `sysinf` | **bash** | System | List a system's information. (dependency: `tlp`) |
 | `picotts` | **sh** | Desktop | Play Text-to-Speech for some text. (dependency: `libttspico-utils`) |
 | `picotts-sel` | **sh** | Desktop | Play TTS for text selection. (dependency: `picotts`) |
-| [`reader`](shell/reader) | **sh** | Network, Data | Feed reader ETL script. Dependency: `curl`, `awk`, `sed`, [`W3C HTML and XML manipulation utilities`](https://www.w3.org/Tools/HTML-XML-utils/README) and `GNU coreutils` (Companion scripts: `filter`, `feed_parser.sh`) |
+| [`reader`](system/reader) | **sh** | Network, Data | Feed reader ETL script. Dependency: `curl`, `awk`, `sed`, [`W3C HTML and XML manipulation utilities`](https://www.w3.org/Tools/HTML-XML-utils/README) and `GNU coreutils` (Companion scripts: `filter`, `feed_parser.sh`) |
 | `filter` | **sh** | Text Processing, Data | Filter script for the Transform stage of the reader. (dependency: `sed`) |
 | `feed_parser.sh` | **sh** | Text Processing, Data | Script to parse the feeds stored by reader. Originally written for `conky` configuration. (dependency: `sed`) |
-| [`rssreader`](shell/rssreader) | sh | Network, Text Processing, Data | Redesigned Feed reader ETL script. Dependency: `curl`, `awk`, `sed`, [`W3C HTML and XML manipulation utilities`](https://www.w3.org/Tools/HTML-XML-utils/README) and `GNU coreutils` (Companion script: `parsefeed.sh`) |
+| [`rssreader`](system/rssreader) | sh | Network, Text Processing, Data | Redesigned Feed reader ETL script. Dependency: `curl`, `awk`, `sed`, [`W3C HTML and XML manipulation utilities`](https://www.w3.org/Tools/HTML-XML-utils/README) and `GNU coreutils` (Companion script: `parsefeed.sh`) |
 | `pkgreport` | bash | Package Management | Generate an HTML report for a list of packages in a file (or stdin). |
 | `themecli.sh` | **sh** | Configuration | Automation script to switch terminal & vim themes. (dependency: `state.conf`, env var `CLI_CONF`) |
 | `ytdl-list` | bash | Network, Media | Download a YouTube playlist using `youtube-dl` to a directory |

@@ -10,18 +10,13 @@ PREFIX="$HOME/.local"
 VERSION="3.14"
 
 print_usage() {
-  echo "Usage: $(basename $0) [-p PATH] [-v Version]"
+  echo "Usage: $(basename $0) [[-p PATH] [-v Version] | [-h | --help]]"
   echo
   echo "Options"
   echo "  -p PATH     Installation prefix, default: ~/.local"
   echo "  -v version  Version number, default: 3.14"
-  echo "  -h          Print this help"
+  echo "  -h, --help  Print this help"
 }
-
-if [ "$#" -gt 4 ]; then
-  print_usage
-  exit 1
-fi
 
 if [ "$#" -eq 1 ] && [ "$1" = "--help" ]; then
   print_usage
@@ -36,14 +31,21 @@ while getopts 'p:v:h' argv; do
   p) path=$OPTARG ;;
   v) ver=$OPTARG ;;
   h) print_usage && exit 0 ;;
-  \?) echo "Invalid option: -$OPTARG" >&2 ;;
+  \?) echo "Invalid option: -$OPTARG" >&2 && exit 1 ;;
   esac
 done
+
+# Shift through option list
+shift $((OPTIND - 1))
+if [ "$#" -gt 0 ]; then
+  print_usage
+  exit 1
+fi
 
 PREFIX="${path:-$PREFIX}"
 VERSION="${ver:-$VERSION}"
 
-# check prefix dir exists
+# check if prefix dir exists
 [ -d "$PREFIX" ] &&
   { printf "removing Python-${VERSION} from ${PREFIX}\n\n"; } ||
   {
@@ -67,5 +69,5 @@ rm "$PREFIX"/lib/libpython"$VERSION"*
 rm -rf "$PREFIX"/lib/python"$VERSION"
 rm "$PREFIX"/lib/pkgconfig/python-"$VERSION"*
 
-# clean include
+# clean include/
 rm -rf "$PREFIX"/include/python"$VERSION"
