@@ -71,3 +71,6 @@ rm "$PREFIX"/lib/pkgconfig/python-"$VERSION"*
 
 # clean include/
 rm -rf "$PREFIX"/include/python"$VERSION"
+
+# clean man page
+rm "$PREFIX"/share/man/man1/python"$VERSION"*
