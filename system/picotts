@@ -13,22 +13,20 @@
 APP_NAME=$(basename $0)
 
 # check availability of TTS engine
-_tts=`command -v pico2wave`
+_tts=$(command -v pico2wave)
 if [ -z "$_tts" ]; then
   echo "Missing dependency: install SVOX Pico engine!" >&2
   exit 1
 fi
 
 # detect & decide audio player
-_player1=`command -v ffplay`
-_player2=`command -v aplay`
+_player1=$(command -v ffplay)
+_player2=$(command -v aplay)
 if [ -z "$_player1" -a -z "$_player2" ]; then
   echo "Missing dependency: install either of [alsa-utils, ffmpeg]" >&2
   exit 1
 fi
-# default to ffmpeg player
 [ -n "$_player1" ] && _play="$_player1 -hide_banner -nodisp -autoexit"
-# resort to alsa player
 [ -z "$_play" ] && _play="$_player2 -q"
 
 # help msg
@@ -46,12 +44,11 @@ fi
 
 # check for available languages
 case "$1" in
-  en-US|en-GB|es-ES|de-DE|fr-FR|it-IT)
-    ;;
-  *)
-    echo "$APP_NAME: unsupported language: $1" >&2
-    exit 1
-    ;;
+en-US | en-GB | es-ES | de-DE | fr-FR | it-IT) ;;
+*)
+  echo "$APP_NAME: unsupported language: $1" >&2
+  exit 1
+  ;;
 esac
 
 # create temp file
@@ -69,4 +66,3 @@ $_play "$tmpfilewav" 2>/dev/null
 
 # delete temp file
 rm "$tmpfilewav"
-
