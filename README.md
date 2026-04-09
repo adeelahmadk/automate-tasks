@@ -26,6 +26,7 @@ Scripts to automate miscellaneous daily desktop tasks.
 | `update_golang` | bash | Package Management | Install/upgrade Golang |
 | [`uninstall_python`](./system/pkgman/uninstall_python.sh) | bash | Package Management | Uninstall Python installed from source |
 | [`updchk_calibre.py`](./system/pkgman/updchk_calibre.py) | Python | Package Management | Check if an update is available for calibre |
+| [`Multimedia Tasks`](./system/multimedia/README.md) |  | Multimedia | Scripts to automate tasks on multimedia files |
 
 
 **Development Tasks**
