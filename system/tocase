@@ -1,0 +1,55 @@
+#!/bin/bash
+
+#########################################################
+# Script:       tocase                                  #
+# Version:      0.2                                     #
+# Author:       Adeel Ahmad (adeelahmadk)               #
+# Date Created: Apr 24, 2026                            #
+# Date Mod.:    Apr 30, 2026                            #
+# Usage:        tocase -u|-l|-t 'string'                #
+# Description:  Script to convert a string's case       #
+#########################################################
+
+usage() {
+  echo "Usage: $0 [-u|-l|-t] 'string'"
+  echo "  -u    Convert to UPPERCASE"
+  echo "  -l    Convert to lowercase"
+  echo "  -t    Convert to Title Case"
+  exit 1
+}
+
+# Default mode if no flag is provided
+mode="title"
+
+# Parse options
+while getopts "ult" opt; do
+  case "$opt" in
+  u) mode="upper" ;;
+  l) mode="lower" ;;
+  t) mode="title" ;;
+  *) usage ;;
+  esac
+done
+
+# Shift off the options so $1 is the string
+shift $((OPTIND - 1))
+
+input="$1"
+
+if [ -z "$input" ]; then
+  usage
+fi
+
+case "$mode" in
+"upper")
+  echo "${input^^}"
+  ;;
+"lower")
+  echo "${input,,}"
+  ;;
+"title")
+  # Lowercase everything first, then capitalize boundaries
+  temp="${input,,}"
+  echo "$temp" | sed 's/\b\(.\)/\u\1/g'
+  ;;
+esac

@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+#########################################################
+# Script:       cb_u2t (clipboard url to title)         #
+# Version:      0.1                                     #
+# Author:       Adeel Ahmad (adeelahmadk)               #
+# Date Created: May 06, 2026                            #
+# Date Mod.:    May 06, 2026                            #
+# Usage:        cb_u2t                                  #
+# Depends:                                              #
+#               - wl-clipboard (wayland) or xsel (X11)  #
+#               - sed                                   #
+# Description:  Extracts title of a blog post from url: #
+#                 - takes url from clipboard and        #
+#                 - pastes title back to clipboard      #
+#               **Best used in a keyboard combo**       #
+#########################################################
+
+# Get URL, clean it, and extract title
+if [ "$XDG_SESSION_TYPE" = "wayland" ]; then
+  url=$(wl-paste)
+else
+  url=$(xsel -ob)
+fi
+
+clean="${url%%[?#]*}"
+title="${clean%/}"
+title="${title##*/}"
+
+title=$(echo $title | sed -E 's/[-_]/ /g ; s/(.*)/\L\1/ ; s/\b(.)/\u\1/g')
+
+# Copy the result back to clipboard
+if [ "$XDG_SESSION_TYPE" = "wayland" ]; then
+  echo -n "$title" | wl-copy
+else
+  echo -n "$title" | xsel -ib
+fi
