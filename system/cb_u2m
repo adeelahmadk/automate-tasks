@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+#########################################################
+# Script:       cb_u2t (clipboard url to md link)       #
+# Version:      0.1                                     #
+# Author:       Adeel Ahmad (adeelahmadk)               #
+# Date Created: May 17, 2026                            #
+# Date Mod.:    May 17, 2026                            #
+# Usage:        cb_u2t                                  #
+# Depends:                                              #
+#               - wl-clipboard (wayland) or xsel (X11)  #
+#               - sed                                   #
+# Description:  Extracts title of a blog post from url: #
+#                 - takes url from clipboard            #
+#                 - pastes markdown link back           #
+#               **Best used in a keyboard combo**       #
+#########################################################
+
+# Get URL, clean it, and extract title
+if [ "$XDG_SESSION_TYPE" = "wayland" ]; then
+  url=$(wl-paste)
+else
+  url=$(xsel -ob)
+fi
+
+clean="${url%%[?#]*}"
+title="${clean%/}"
+title="${title##*/}"
+
+title=$(echo $title | sed -E 's/[-_]/ /g ; s/(.*)/\L\1/ ; s/\b(.)/\u\1/g')
+md_link="[${title}](${url})"
+
+# Copy the result back to clipboard
+if [ "$XDG_SESSION_TYPE" = "wayland" ]; then
+  echo -n "$md_link" | wl-copy
+else
+  echo -n "$md_link" | xsel -ib
+fi
