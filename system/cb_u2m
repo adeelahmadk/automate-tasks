@@ -2,11 +2,11 @@
 
 #########################################################
 # Script:       cb_u2t (clipboard url to md link)       #
-# Version:      0.1                                     #
+# Version:      0.2                                     #
 # Author:       Adeel Ahmad (adeelahmadk)               #
 # Date Created: May 17, 2026                            #
-# Date Mod.:    May 17, 2026                            #
-# Usage:        cb_u2t                                  #
+# Date Mod.:    Jun 16, 2026                            #
+# Usage:        cb_u2m                                  #
 # Depends:                                              #
 #               - wl-clipboard (wayland) or xsel (X11)  #
 #               - sed                                   #
@@ -23,11 +23,26 @@ else
   url=$(xsel -ob)
 fi
 
+# Clean URL and extract the trailing slug
 clean="${url%%[?#]*}"
 title="${clean%/}"
 title="${title##*/}"
 
+# 1. Replace dashes/underscores with spaces
+# 2. Convert everything to lowercase
+# 3. Capitalize the first letter of every word
 title=$(echo $title | sed -E 's/[-_]/ /g ; s/(.*)/\L\1/ ; s/\b(.)/\u\1/g')
+
+# 4. Fix Prepositions: Convert specific capitalized words to lowercase
+title=$(echo "$title" | sed -E 's/\b(In|On|At|To|For|With|And|By)\b/\L&/g')
+
+# 5. Fix Abbreviations: Convert specific words to uppercase
+title=$(echo "$title" | sed -E 's/\b(Html|Xml|Xss|Css|Api|Url|Php)\b/\U&/g')
+
+# 6. Ensure the very first word of the title is ALWAYS capitalized
+title=$(echo "$title" | sed -E 's/^(.)/\u\1/')
+
+# Format as Markdown link
 md_link="[${title}](${url})"
 
 # Copy the result back to clipboard

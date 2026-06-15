@@ -27,7 +27,8 @@ Scripts to automate miscellaneous daily desktop tasks.
 | [`uninstall_python`](./system/pkgman/uninstall_python.sh) | bash | Package Management | Uninstall Python installed from source |
 | [`updchk_calibre.py`](./system/pkgman/updchk_calibre.py) | Python | Package Management | Check if an update is available for calibre |
 | [`Multimedia Tasks`](./system/multimedia/README.md) |  | Multimedia | Scripts to automate tasks on multimedia files |
-
+| [cb_u2t](./system/cb_u2t) | bash | Desktop | Converts a url on the clipboard to a Title string on clipboard |
+| [cb_u2m](./system/cb_u2m) | bash | Desktop | Converts a url on the clipboard to a markdown link on clipboard |
 
 **Development Tasks**
 
