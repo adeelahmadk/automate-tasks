@@ -1,0 +1,111 @@
+#!/usr/bin/env bash
+
+# Resource params
+CACHE_DIR="$HOME/.cache"
+CACHE_FILE=
+API_URL=
+AMOUNT=1 # Default amount to 1 if not specified
+
+# State
+RAW=
+DEBUG=0
+
+# binaries
+_CURL=$(command -v curl)
+
+print_help() {
+  echo "Usage: $(basename $0) [OPT] <CURR-FROM> <CURR-TO> [AMOUNT]"
+  echo "Get currency exchange rate or convert an amount"
+  echo
+  echo "Options"
+  echo "  AMOUNT    Amount to convert"
+  echo "  CURR-FROM Currency to convert from"
+  echo "  CURR-TO   Currency to convert to"
+  echo "  -r        Print raw output"
+  echo "  -h        Print help"
+}
+
+pull_data() {
+  CURL_OPTS="-fs"
+  [ "$DEBUG" -eq 1 ] && {
+    CURL_OPTS="${CURL_OPTS}S"
+    printf "[DEBUG] Args:\n  1) %s\n  2) %s\n\n" "$1" "$2"
+  }
+
+  $_CURL "$CURL_OPTS" -o "$2" "$1"
+
+  if [ $? -ne 0 ]; then
+    echo "Error pulling exchange rates..." >&2
+    rm -rf "$2"
+    exit 1
+  fi
+}
+
+check_cache_file() {
+  TODAY=$(date +%Y-%m-%d)
+  API_URL="https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@${TODAY}/v1/currencies/${CURR_FROM}.json"
+
+  if [[ ! -f "$CACHE_FILE" ]]; then
+    [ "$DEBUG" -eq 1 ] && printf "[DEBUG] Cache file not found, pulling...\n\n"
+    pull_data "$API_URL" "$CACHE_FILE"
+    return
+  fi
+
+  TODAY_TS=$(date -d "$(date +%Y-%m-%d) 00:00:00" +%s)
+  CACHED_DATE=$(cat "$CACHE_FILE" | jq -r ".date")
+  CACHED_TS=$(date -d "$CACHED_DATE" +%s)
+
+  if [[ "$TODAY_TS" -gt "$CACHED_TS" ]]; then
+    [ "$DEBUG" -eq 1 ] && printf "[DEBUG] Outdate cache file from ${CACHED_DATE}\n\n"
+    pull_data "$API_URL" "$CACHE_FILE"
+  fi
+}
+
+[ $# -lt 2 ] && {
+  print_help
+  exit 1
+}
+
+while getopts "rh" argv; do
+  case $argv in
+  r) RAW="y" ;;
+  h) print_help && exit 0 ;;
+  *) echo "Invalid option: -$OPTARG" >&2 ;;
+  esac
+done
+
+shift $((OPTIND - 1))
+
+[ $# -gt 3 ] && {
+  print_help
+  exit 1
+}
+
+# Check if the last argument is an integer or floating-point number
+if [[ "${!#}" =~ ^-?[0-9]*\.?[0-9]+$ ]]; then
+  [ "$DEBUG" -eq 1 ] && printf "[DEBUG] Amount to convert: ${!#}\n\n"
+  AMOUNT="${!#}"
+fi
+
+CURR_FROM="${1,,}"
+CURR_TO="${2,,}"
+CACHE_FILE="${CACHE_DIR}/curr.${CURR_FROM}.json"
+
+# manage cache file
+check_cache_file
+
+DATA=$(<"$CACHE_FILE")
+RATE_TO=$(echo "$DATA" | jq -r ".${CURR_FROM}.\"${CURR_TO}\"")
+
+if [ "$RATE_TO" = "null" ] || [ -z "$RATE_TO" ]; then
+  echo "Error: Invalid currency code or API failure." >&2
+  exit 1
+fi
+
+FINAL_VALUE=$(echo "scale=4; (${RATE_TO} * ${AMOUNT}) / 1" | bc)
+
+if [[ -z "$RAW" ]]; then
+  echo "${CURR_FROM^^} ${AMOUNT} = ${CURR_TO^^} ${FINAL_VALUE}"
+else
+  echo "${FINAL_VALUE}"
+fi
