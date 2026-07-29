@@ -13,6 +13,10 @@ DEBUG=0
 # binaries
 _CURL=$(command -v curl)
 
+print_usage() {
+    echo "Usage: $(basename $0) [OPT] <CURR-FROM> <CURR-TO> [AMOUNT]"
+}
+
 print_help() {
   echo "Usage: $(basename $0) [OPT] <CURR-FROM> <CURR-TO> [AMOUNT]"
   echo "Get currency exchange rate or convert an amount"
@@ -25,6 +29,18 @@ print_help() {
   echo "  -h        Print help"
 }
 
+# Check if the last argument is a number and set AMOUNT
+parse_amount() {
+  if [[ "${!#}" =~ ^-?[0-9]*\.?[0-9]+$ ]]; then
+    [ "$DEBUG" -eq 1 ] && printf "[DEBUG] Amount to convert: ${!#}\n\n"
+    AMOUNT="${!#}"
+  else
+      echo -e "Please, provide an amount in numbers!\n" >&2
+      print_usage
+      exit 1
+  fi
+}
+
 pull_data() {
   CURL_OPTS="-fs"
   [ "$DEBUG" -eq 1 ] && {
@@ -32,13 +48,19 @@ pull_data() {
     printf "[DEBUG] Args:\n  1) %s\n  2) %s\n\n" "$1" "$2"
   }
 
-  $_CURL "$CURL_OPTS" -o "$2" "$1"
+  # use a temporary file for the download
+  TMPFILE=$(mktemp)
+  $_CURL "$CURL_OPTS" -o "$TMPFILE" "$1"
 
   if [ $? -ne 0 ]; then
     echo "Error pulling exchange rates..." >&2
-    rm -rf "$2"
+    rm -f "$TMPFILE"
     exit 1
   fi
+
+  # only copy to cache if download succeeded
+  cp "$TMPFILE" "$2"
+  rm -f "$TMPFILE"
 }
 
 check_cache_file() {
@@ -81,11 +103,7 @@ shift $((OPTIND - 1))
   exit 1
 }
 
-# Check if the last argument is an integer or floating-point number
-if [[ "${!#}" =~ ^-?[0-9]*\.?[0-9]+$ ]]; then
-  [ "$DEBUG" -eq 1 ] && printf "[DEBUG] Amount to convert: ${!#}\n\n"
-  AMOUNT="${!#}"
-fi
+parse_amount "$@"
 
 CURR_FROM="${1,,}"
 CURR_TO="${2,,}"
@@ -97,15 +115,17 @@ check_cache_file
 DATA=$(<"$CACHE_FILE")
 RATE_TO=$(echo "$DATA" | jq -r ".${CURR_FROM}.\"${CURR_TO}\"")
 
+# [ "$RATE_FROM" = "null" ] || [ -z "$RATE_FROM" ] ||
 if [ "$RATE_TO" = "null" ] || [ -z "$RATE_TO" ]; then
   echo "Error: Invalid currency code or API failure." >&2
   exit 1
 fi
 
+# FINAL_VALUE=$(echo "scale=4; (${RATE_TO} / ${RATE_FROM}) * ${AMOUNT}" | bc)
 FINAL_VALUE=$(echo "scale=4; (${RATE_TO} * ${AMOUNT}) / 1" | bc)
 
-if [[ -z "$RAW" ]]; then
-  echo "${CURR_FROM^^} ${AMOUNT} = ${CURR_TO^^} ${FINAL_VALUE}"
+if [[ -n "$RAW" ]]; then
+  echo -n "${FINAL_VALUE}"
 else
-  echo "${FINAL_VALUE}"
+  echo "${CURR_FROM^^} ${AMOUNT} = ${CURR_TO^^} ${FINAL_VALUE}"
 fi
