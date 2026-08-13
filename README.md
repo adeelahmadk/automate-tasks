@@ -16,9 +16,10 @@ Scripts to automate miscellaneous daily desktop tasks.
 | `picotts-sel` | **sh** | Desktop | Play TTS for text selection. (dependency: `picotts`) |
 | `pkgreport` | bash | Package Management | Generate an HTML report for a list of packages in a file (or stdin). |
 | `themecli.sh` | **sh** | Configuration | Automation script to switch terminal & vim themes. (dependency: `state.conf`, env var `CLI_CONF`) |
-| [`update_golang`](./shell/system/pkgman/update_golang.sh) | **bash** | Package Management | Install/upgrade Golang |
+| [`upgrade_golang`](./shell/system/pkgman/upgrade_golang.sh) | **bash** | Package Management | Install/upgrade Golang |
 | [`uninstall_python`](./shell/system/pkgman/uninstall_python.sh) | **bash** | Package Management | Uninstall Python installed from source |
-| [`updchk_calibre.py`](./system/pkgman/updchk_calibre.py) | **Python** | Package Management | Check if an update is available for calibre |
+| [`updchk_calibre.py`](./shell/system/pkgman/updchk_calibre.py) | **Python** | Package Management | Check if an update is available for calibre |
+| [`upgrade_calibre.py`](./shell/system/pkgman/upgrade_calibre.py) | **Python** | Package Management | Check if an update is available for calibre |
 
 **Utility Scripts**
 
