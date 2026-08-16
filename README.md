@@ -19,7 +19,8 @@ Scripts to automate miscellaneous daily desktop tasks.
 | [`upgrade_golang`](./shell/system/pkgman/upgrade_golang.sh) | **bash** | Package Management | Install/upgrade Golang |
 | [`uninstall_python`](./shell/system/pkgman/uninstall_python.sh) | **bash** | Package Management | Uninstall Python installed from source |
 | [`updchk_calibre.py`](./shell/system/pkgman/updchk_calibre.py) | **Python** | Package Management | Check if an update is available for calibre |
-| [`upgrade_calibre.py`](./shell/system/pkgman/upgrade_calibre.py) | **Python** | Package Management | Check if an update is available for calibre |
+| [`upgrade_calibre.py`](./shell/system/pkgman/upgrade_calibre.py) | **Python** | Package Management | Check for calibre update and upgrade if user chooses to.  |
+| [lsdup.sh](./shell/system/lsdup.sh) | bash | Filesystem | List duplicate files |
 
 **Utility Scripts**
 
